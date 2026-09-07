@@ -1,0 +1,405 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#080807" />
+    <title>A little something for you</title>
+    <style>
+      :root {
+        --ink: #35252c;
+        --paper: #fff7f1;
+        --rose: #ff5b93;
+        --warm-shadow: rgba(228, 92, 119, 0.38);
+        --scene-w: min(86vw, 760px);
+      }
+
+      * { box-sizing: border-box; }
+      html, body { min-height: 100%; }
+      body {
+        margin: 0;
+        min-height: 100svh;
+        overflow: hidden;
+        display: grid;
+        place-items: center;
+        color: var(--ink);
+        background: #080807;
+        font-family: Georgia, "Times New Roman", serif;
+      }
+
+      .scene {
+        width: var(--scene-w);
+        aspect-ratio: 16 / 9;
+        position: relative;
+        overflow: hidden;
+        isolation: isolate;
+        user-select: none;
+        touch-action: none;
+        border-radius: clamp(26px, 4.5vw, 44px);
+        background:
+          radial-gradient(circle at 51% 43%, rgba(255, 136, 161, 0.28) 0 3%, rgba(255, 164, 179, 0.17) 13%, transparent 33%),
+          radial-gradient(circle at 40% 20%, rgba(255,255,255,.82), transparent 34%),
+          linear-gradient(119deg, #fffaf5 0%, #fff5ee 49%, #fff9f3 100%);
+        box-shadow: 0 26px 80px rgba(0,0,0,.55), inset 0 1px rgba(255,255,255,.9);
+      }
+
+      .scene::before,
+      .scene::after {
+        content: "";
+        pointer-events: none;
+        position: absolute;
+        z-index: -1;
+        width: 54%; height: 122%; top: -12%;
+        filter: blur(22px);
+        opacity: .28;
+      }
+      .scene::before { left: -15%; background: linear-gradient(120deg, #ffe5de, transparent 68%); }
+      .scene::after { right: -18%; background: linear-gradient(240deg, #ffe0d5, transparent 70%); }
+
+      .eyebrow {
+        position: absolute;
+        z-index: 3;
+        top: 13.5%; left: 0; right: 0;
+        margin: 0;
+        text-align: center;
+        font-size: clamp(13px, 1.65vw, 19px);
+        font-style: italic;
+        font-weight: 500;
+        letter-spacing: .045em;
+        color: #9a6266;
+      }
+
+      .heart-wrap {
+        position: absolute;
+        z-index: 2;
+        left: 50%; top: 43%;
+        width: clamp(62px, 11.5vw, 104px);
+        aspect-ratio: 1;
+        transform: translate(-50%, -50%);
+        transition: transform .62s cubic-bezier(.16,.84,.26,1), opacity .34s ease;
+      }
+      .heart-wrap::before {
+        content: "";
+        position: absolute;
+        inset: -55%;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(255, 70, 132, .3), transparent 65%);
+        filter: blur(8px);
+        animation: breathe 3.2s ease-in-out infinite;
+      }
+      .heart {
+        position: absolute;
+        inset: 0;
+        overflow: visible;
+        filter: drop-shadow(0 12px 12px rgba(193, 12, 77, .26));
+      }
+      .heart-fill {
+        fill: url(#heart-gradient);
+        stroke: rgba(188, 2, 71, .2);
+        stroke-width: 1.3;
+      }
+
+      .hint {
+        position: absolute;
+        z-index: 5;
+        bottom: 12%; left: 0; right: 0;
+        margin: 0;
+        text-align: center;
+        color: #9d7576;
+        font: 600 clamp(9px, 1.25vw, 12px)/1 Arial, sans-serif;
+        letter-spacing: .2em;
+        transition: opacity .25s ease;
+      }
+
+      .bow-area {
+        position: absolute;
+        z-index: 4;
+        left: 20%; bottom: 17%;
+        width: clamp(68px, 12vw, 104px);
+        height: clamp(70px, 12.5vw, 110px);
+        cursor: grab;
+      }
+      .bow-area:active { cursor: grabbing; }
+      .bow {
+        position: absolute;
+        inset: 0;
+        overflow: visible;
+      }
+      .bow-body {
+        fill: none;
+        stroke: #3e2927;
+        stroke-width: 4.7;
+        stroke-linecap: round;
+        filter: drop-shadow(1px 3px 2px rgba(91,37,29,.17));
+      }
+      .bow-wood { fill: none; stroke: #b58550; stroke-width: 1.4; opacity: .9; }
+      .string { fill: none; stroke: #39282a; stroke-width: 1.4; opacity: .92; }
+      .grip { stroke: #80513e; stroke-width: 5.8; stroke-linecap: round; }
+
+      .arrow {
+        position: absolute;
+        z-index: 6;
+        left: 28.6%;
+        bottom: 27.1%;
+        width: clamp(79px, 14vw, 125px);
+        height: 9px;
+        transform-origin: 0 50%;
+        transform: translate3d(var(--pull, 0px), 0, 0) rotate(-38deg);
+        transition: transform .08s linear;
+        pointer-events: none;
+      }
+      .shaft {
+        position: absolute;
+        left: 6px; right: 0; top: 4px;
+        height: 1.4px;
+        background: linear-gradient(90deg, #b7824c, #e7c289 55%, #b57d42);
+        box-shadow: 0 1px rgba(255,255,255,.46);
+      }
+      .arrowhead {
+        position: absolute;
+        right: -4px; top: 0;
+        width: 11px; height: 10px;
+        clip-path: polygon(100% 50%, 0 0, 25% 50%, 0 100%);
+        background: #b7a37a;
+        filter: drop-shadow(0 1px 1px rgba(0,0,0,.17));
+      }
+      .feather {
+        position: absolute;
+        left: 0; top: -4px;
+        width: 16px; height: 8px;
+        border-radius: 80% 10% 10% 80%;
+        background: linear-gradient(90deg, #f5839e, #fbc5cf);
+        transform: rotate(8deg);
+      }
+      .feather + .feather { top: 5px; transform: rotate(-8deg) scaleY(-1); opacity: .82; }
+
+      .flight-trail {
+        position: absolute;
+        z-index: 1;
+        left: 31%; bottom: 29.5%;
+        width: 0;
+        height: 1px;
+        transform-origin: 0 50%;
+        transform: rotate(-38deg);
+        background: linear-gradient(90deg, rgba(247, 124, 156, .55), transparent);
+        opacity: 0;
+      }
+
+      .message {
+        position: absolute;
+        z-index: 8;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        text-align: center;
+        pointer-events: none;
+        overflow: hidden;
+      }
+      .message > div {
+        display: grid;
+        place-content: center;
+        width: 100%;
+        height: 100%;
+        padding: 13%;
+        transform: translateY(-110%);
+        transition: transform .72s cubic-bezier(.18,.88,.25,1);
+        background:
+          radial-gradient(circle at 18% 80%, rgba(255,255,255,.34), transparent 31%),
+          radial-gradient(circle at 83% 12%, rgba(255,225,239,.75), transparent 25%),
+          linear-gradient(135deg, #ff95bb 0%, #ff639d 51%, #ee3e82 100%);
+      }
+      .message p { margin: 0; }
+      .message .tiny { color: rgba(255,255,255,.84); font-size: clamp(11px, 1.5vw, 15px); font-style: italic; letter-spacing: .06em; }
+      .message .big { margin-top: .45em; color: #fff8fb; font-size: clamp(26px, 5.4vw, 51px); line-height: 1.03; font-style: italic; text-shadow: 0 3px 16px rgba(153, 7, 69, .23); }
+      .message button {
+        margin-top: 1.35em;
+        border: 0;
+        border-bottom: 1px solid rgba(255,255,255,.7);
+        color: #fff9fc;
+        background: transparent;
+        font: 600 clamp(9px, 1.15vw, 12px)/1 Arial, sans-serif;
+        letter-spacing: .15em;
+        text-transform: uppercase;
+        padding: 0 0 5px;
+        cursor: pointer;
+      }
+      .message button:focus-visible { outline: 2px solid #e45986; outline-offset: 5px; }
+
+      .scene.is-dragging .arrow { transition: none; }
+      .scene.is-dragging .hint { opacity: .46; }
+      .scene.is-flying .arrow { transition: none; }
+      .scene.is-flying .flight-trail { opacity: 1; }
+      .scene.is-hit .heart-wrap { transform: translate(-50%, -50%) scale(.42); opacity: 0; }
+      .scene.is-hit .bow-area, .scene.is-hit .hint, .scene.is-hit .arrow, .scene.is-hit .flight-trail { opacity: 0; transition: opacity .18s ease; }
+      .scene.is-hit .message { pointer-events: auto; }
+      .scene.is-hit .message > div { transform: translateY(0); }
+
+      @keyframes breathe { 50% { transform: scale(1.16); opacity: .46; } }
+      @media (max-width: 560px) {
+        :root { --scene-w: min(92vw, 560px); }
+        .scene { aspect-ratio: 3 / 4; border-radius: 31px; }
+        .eyebrow { top: 16%; font-size: 16px; }
+        .heart-wrap { top: 41%; width: 112px; }
+        .bow-area { left: 17%; bottom: 18%; width: 102px; height: 108px; }
+        .arrow { left: 26.6%; bottom: 28.3%; width: 126px; transform: translate3d(var(--pull, 0px), 0, 0) rotate(-59deg); }
+        .flight-trail { left: 28%; bottom: 30.2%; transform: rotate(-59deg); }
+        .hint { bottom: 11%; font-size: 10px; }
+      }
+      @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
+    </style>
+  </head>
+  <body>
+    <main class="scene" id="scene" aria-label="An interactive valentine card">
+      <p class="eyebrow">a little something, for you</p>
+
+      <div class="heart-wrap" aria-hidden="true">
+        <svg class="heart" viewBox="0 0 100 90" role="presentation">
+          <defs>
+            <radialGradient id="heart-gradient" cx="31%" cy="17%" r="88%">
+              <stop offset="0" stop-color="#ffc7df" />
+              <stop offset=".15" stop-color="#ff80b3" />
+              <stop offset=".61" stop-color="#f72e77" />
+              <stop offset="1" stop-color="#d70754" />
+            </radialGradient>
+          </defs>
+          <path class="heart-fill" d="M50 82.5 12.7 46.9C-2.1 32.9 4.9 6.1 26.3 6.1c10.6 0 18.9 5.6 23.7 14.7C54.8 11.7 63.1 6.1 73.7 6.1 95.1 6.1 102.1 32.9 87.3 46.9Z" />
+          <ellipse cx="32" cy="22" rx="6.4" ry="8.3" transform="rotate(-28 32 22)" fill="rgba(255,255,255,.74)" />
+        </svg>
+      </div>
+
+      <div class="flight-trail" id="trail"></div>
+      <div class="bow-area" id="bow" aria-label="Pull the bow back and release to shoot the arrow" role="button" tabindex="0">
+        <svg class="bow" viewBox="0 0 100 108" aria-hidden="true">
+          <path class="bow-body" d="M28 4 C5 27 5 80 31 103" />
+          <path class="bow-wood" d="M31 7 C14 31 13 77 33 100" />
+          <path class="string" id="string" d="M28 5 L69 54 L31 103" />
+          <path class="grip" d="M25 47 L32 63" />
+        </svg>
+      </div>
+      <div class="arrow" id="arrow" aria-hidden="true">
+        <span class="feather"></span><span class="feather"></span><span class="shaft"></span><span class="arrowhead"></span>
+      </div>
+      <p class="hint" id="hint">PULL &amp; RELEASE</p>
+
+      <section class="message" aria-live="polite">
+        <div>
+          <p class="tiny">make a wish</p>
+          <p class="big">Happy Birthday<br />Basbosa</p>
+          <button type="button" id="again">shoot again</button>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const scene = document.querySelector('#scene');
+      const bow = document.querySelector('#bow');
+      const arrow = document.querySelector('#arrow');
+      const string = document.querySelector('#string');
+      const trail = document.querySelector('#trail');
+      const again = document.querySelector('#again');
+      let pulling = false;
+      let pull = 0;
+      let startX = 0;
+      let animationFrame;
+
+      function setPull(value) {
+        pull = Math.max(-78, Math.min(0, value));
+        scene.style.setProperty('--pull', `${pull}px`);
+        const bend = 69 + Math.abs(pull) * .53;
+        string.setAttribute('d', `M28 5 L${bend.toFixed(1)} 54 L31 103`);
+      }
+
+      function restore() {
+        cancelAnimationFrame(animationFrame);
+        scene.className = 'scene';
+        arrow.style.transform = '';
+        arrow.style.left = '';
+        arrow.style.top = '';
+        arrow.style.bottom = '';
+        arrow.style.opacity = '';
+        trail.style.width = '';
+        trail.style.left = '';
+        trail.style.top = '';
+        trail.style.bottom = '';
+        trail.style.transform = '';
+        setPull(0);
+      }
+
+      function hit() {
+        scene.classList.remove('is-flying');
+        scene.classList.add('is-hit');
+        arrow.style.opacity = '0';
+      }
+
+      function fire() {
+        if (scene.classList.contains('is-flying') || scene.classList.contains('is-hit')) return;
+        scene.classList.remove('is-dragging');
+        scene.classList.add('is-flying');
+        const rect = scene.getBoundingClientRect();
+        const mobile = window.matchMedia('(max-width: 560px)').matches;
+        // These coordinates are the arrow's tail and the exact centre of the heart.
+        const from = mobile
+          ? { x: rect.width * .266, y: rect.height * .708 }
+          : { x: rect.width * .286, y: rect.height * .718 };
+        const target = mobile
+          ? { x: rect.width * .50, y: rect.height * .41 }
+          : { x: rect.width * .50, y: rect.height * .43 };
+        const dx = target.x - from.x;
+        const dy = target.y - from.y;
+        const rotation = Math.atan2(dy, dx) * 180 / Math.PI;
+        const distance = Math.hypot(dx, dy);
+        const arrowLength = arrow.offsetWidth;
+        const endpoint = {
+          x: target.x - Math.cos(rotation * Math.PI / 180) * arrowLength,
+          y: target.y - Math.sin(rotation * Math.PI / 180) * arrowLength,
+        };
+        const flightDistance = Math.hypot(endpoint.x - from.x, endpoint.y - from.y);
+        const started = performance.now();
+        const duration = 520;
+        trail.style.left = `${from.x}px`;
+        trail.style.top = `${from.y}px`;
+        trail.style.bottom = 'auto';
+        trail.style.width = `${flightDistance}px`;
+        trail.style.transform = `rotate(${rotation}deg)`;
+        setPull(0);
+
+        function step(now) {
+          const progress = Math.min(1, (now - started) / duration);
+          const eased = 1 - Math.pow(1 - progress, 3);
+          const x = from.x + (endpoint.x - from.x) * eased;
+          const y = from.y + (endpoint.y - from.y) * eased;
+          arrow.style.left = `${x}px`;
+          arrow.style.bottom = 'auto';
+          arrow.style.top = `${y}px`;
+          arrow.style.transform = `translate(-3px, -4px) rotate(${rotation}deg)`;
+          if (progress < 1) animationFrame = requestAnimationFrame(step);
+          else setTimeout(hit, 80);
+        }
+        animationFrame = requestAnimationFrame(step);
+      }
+
+      bow.addEventListener('pointerdown', (event) => {
+        if (scene.classList.contains('is-flying') || scene.classList.contains('is-hit')) return;
+        pulling = true;
+        startX = event.clientX;
+        bow.setPointerCapture(event.pointerId);
+        scene.classList.add('is-dragging');
+      });
+      bow.addEventListener('pointermove', (event) => {
+        if (!pulling) return;
+        setPull(event.clientX - startX);
+      });
+      function release() {
+        if (!pulling) return;
+        pulling = false;
+        if (pull < -16) fire();
+        else { scene.classList.remove('is-dragging'); setPull(0); }
+      }
+      bow.addEventListener('pointerup', release);
+      bow.addEventListener('pointercancel', release);
+      bow.addEventListener('keydown', (event) => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); fire(); } });
+      again.addEventListener('click', restore);
+    </script>
+  </body>
+</html>
